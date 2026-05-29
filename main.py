@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Account Checker â€“ uses Proxy Pool API for residential proxies
+# Account Checker – uses Proxy Pool API for residential proxies
 # Revamped: silent proxy rotation, new banner, table file selector, live stats
 
 import os, sys, time, random, hashlib, re, json, logging, urllib.parse, signal
@@ -24,7 +24,7 @@ from rich.align import Align
 from rich.columns import Columns
 
 # ================================
-# ðŸŒ Proxy Pool API Setup
+# 🌍 Proxy Pool API Setup
 # ================================
 API_BASE = "https://proxies-restocker.onrender.com/api"
 CURRENT_PROXY_STRING = None
@@ -58,7 +58,7 @@ def block_current_proxy():
     try:
         payload = {"proxy": CURRENT_PROXY_STRING}
         req_sync.post(f"{API_BASE}/proxy/block", json=payload, timeout=5)
-        logging.info(f"ðŸ“› Marked proxy as blocked: {CURRENT_PROXY_STRING[:30]}...")
+        logging.info(f"📛 Marked proxy as blocked: {CURRENT_PROXY_STRING[:30]}...")
     except Exception as e:
         logging.error(f"Could not block proxy: {e}")
 
@@ -75,7 +75,7 @@ def update_session_proxies(session, new_proxies):
     return False
 
 # ================================
-# ðŸŽ¨ Termux Theme (optional)
+# 🎨 Termux Theme (optional)
 # ================================
 def setup_termux_theme():
     if not (os.getenv("TERMUX_VERSION") or os.getenv("ANDROID_ROOT")):
@@ -92,31 +92,31 @@ cursor=#f2d5e9
             with open(config_path, "w") as f:
                 f.write(desired_theme)
             os.system("termux-reload-settings")
-            print(Fore.GREEN + "âœ… Termux theme set" + Style.RESET_ALL)
+            print(Fore.GREEN + "✅ Termux theme set" + Style.RESET_ALL)
     except:
         pass
 
 setup_termux_theme()
 
 # ================================
-# ðŸŽ¨ Console & Emojis
+# 🎨 Console & Emojis
 # ================================
 console = Console()
 colorama.init(autoreset=True)
 
 EMOJI = {
-    "success": "âœ…", "error": "âŒ", "warning": "âš ï¸", "info": "â„¹ï¸",
-    "rocket": "ðŸš€", "gear": "âš™ï¸", "check": "âœ”ï¸", "cross": "âœ–ï¸",
-    "star": "â­", "fire": "ðŸ”¥", "crown": "ðŸ‘‘", "game": "ðŸŽ®",
-    "phone": "ðŸ“±", "email": "ðŸ“§", "lock": "ðŸ”’", "unlock": "ðŸ”“",
-    "globe": "ðŸŒ", "flag": "ðŸ", "hourglass": "âŒ›", "stop": "ðŸ›‘",
-    "play": "â–¶ï¸", "pause": "â¸ï¸", "refresh": "ðŸ”„", "database": "ðŸ’¾",
-    "folder": "ðŸ“", "file": "ðŸ“„", "key": "ðŸ”‘", "shield": "ðŸ›¡ï¸",
-    "target": "ðŸŽ¯", "trophy": "ðŸ†", "chart": "ðŸ“Š", "bell": "ðŸ””",
-    "mute": "ðŸ”•", "telegram": "ðŸ“±", "network": "ðŸŒ", "ip": "ðŸŒ",
-    "cookie": "ðŸª", "banned": "ðŸš«", "one": "1ï¸âƒ£", "two": "2ï¸âƒ£",
-    "three": "3ï¸âƒ£", "four": "4ï¸âƒ£", "line": "â”€", "clock": "â°",
-    "robot": "ðŸ¤–", "chat": "ðŸ’¬", "question": "â“", "calendar": "ðŸ“…"
+    "success": "✅", "error": "❌", "warning": "⚠️", "info": "ℹ️",
+    "rocket": "🚀", "gear": "⚙️", "check": "✔️", "cross": "✖️",
+    "star": "⭐", "fire": "🔥", "crown": "👑", "game": "🎮",
+    "phone": "📱", "email": "📧", "lock": "🔒", "unlock": "🔓",
+    "globe": "🌍", "flag": "🏁", "hourglass": "⌛", "stop": "🛑",
+    "play": "▶️", "pause": "⏸️", "refresh": "🔄", "database": "💾",
+    "folder": "📁", "file": "📄", "key": "🔑", "shield": "🛡️",
+    "target": "🎯", "trophy": "🏆", "chart": "📊", "bell": "🔔",
+    "mute": "🔕", "telegram": "📱", "network": "🌐", "ip": "🌍",
+    "cookie": "🍪", "banned": "🚫", "one": "1️⃣", "two": "2️⃣",
+    "three": "3️⃣", "four": "4️⃣", "line": "─", "clock": "⏰",
+    "robot": "🤖", "chat": "💬", "question": "❓", "calendar": "📅"
 }
 
 account_counter = {"count": 0, "total": 0}
@@ -126,12 +126,12 @@ live_display = None   # will hold the Live context
 CHECK_OTHER_GAMES = False
 
 # ================================
-# ðŸŒˆ Revamped Banner
+# 🌈 Revamped Banner
 # ================================
 def print_banner():
     os.system('clear' if os.name != 'nt' else 'cls')
     title = Text("GARENA ACCOUNT CHECKER", style="bold cyan")
-    subtitle = Text("Proxyâ€‘powered â€¢ Multiâ€‘game scanner", style="dim white")
+    subtitle = Text("Proxy‑powered • Multi‑game scanner", style="dim white")
     panel = Panel(
         Align.center(Columns([title, subtitle], align="center")),
         border_style="bright_cyan",
@@ -142,20 +142,20 @@ def print_banner():
     console.print()
 
 # ================================
-# ðŸ›‘ Signal Handler
+# 🛑 Signal Handler
 # ================================
 shutdown_event = Event()
 
 def signal_handler(signum, frame):
-    print(f"\n  {Fore.LIGHTCYAN_EX}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”{Style.RESET_ALL}")
-    print(f"  {Fore.YELLOW}{EMOJI['stop']} âš ï¸  Interrupted by user - Exiting immediately{Style.RESET_ALL}")
-    print(f"  {Fore.LIGHTCYAN_EX}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”{Style.RESET_ALL}\n")
+    print(f"\n  {Fore.LIGHTCYAN_EX}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Style.RESET_ALL}")
+    print(f"  {Fore.YELLOW}{EMOJI['stop']} ⚠️  Interrupted by user - Exiting immediately{Style.RESET_ALL}")
+    print(f"  {Fore.LIGHTCYAN_EX}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Style.RESET_ALL}\n")
     os._exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 
 # ================================
-# ðŸŽ¨ Color & Logging Setup
+# 🎨 Color & Logging Setup
 # ================================
 class Colors:
     LIGHTGREEN_EX = Fore.LIGHTGREEN_EX; LIGHTCYAN_EX = Fore.LIGHTCYAN_EX; LIGHTYELLOW_EX = Fore.LIGHTYELLOW_EX
@@ -190,7 +190,7 @@ class GracefulThreadPoolExecutor(ThreadPoolExecutor):
         super().shutdown(wait=wait, cancel_futures=cancel_futures)
 
 # ================================
-# ðŸª Cookie & DataDome Managers (mostly unchanged)
+# 🍪 Cookie & DataDome Managers (mostly unchanged)
 # ================================
 class CookieManager:
     def __init__(self):
@@ -258,30 +258,30 @@ class DataDomeManager:
     def fetch_fresh_datadome_with_retry(self, session, max_retries=5):
         for attempt in range(1, max_retries+1):
             try:
-                logger.info(f"{EMOJI['refresh']} ðŸ”„ Fetching fresh DataDome cookie (attempt {attempt}/{max_retries})...")
+                logger.info(f"{EMOJI['refresh']} 🔄 Fetching fresh DataDome cookie (attempt {attempt}/{max_retries})...")
                 fresh_session = cloudscraper.create_scraper()
                 fresh_session.proxies.update(PROXIES)
                 new_datadome = get_datadome_cookie(fresh_session)
                 if new_datadome:
-                    logger.info(f"{EMOJI['success']} âœ… Fresh DataDome cookie obtained: {new_datadome[:20]}...")
+                    logger.info(f"{EMOJI['success']} ✅ Fresh DataDome cookie obtained: {new_datadome[:20]}...")
                     self.set_datadome(new_datadome)
                     self.set_session_datadome(session, new_datadome)
                     return True
-                else: logger.warning(f"{EMOJI['warning']} âš ï¸  Attempt {attempt}: Failed to get DataDome cookie")
-            except Exception as e: logger.error(f"{EMOJI['error']} âŒ Attempt {attempt}: Error - {str(e)[:50]}")
+                else: logger.warning(f"{EMOJI['warning']} ⚠️  Attempt {attempt}: Failed to get DataDome cookie")
+            except Exception as e: logger.error(f"{EMOJI['error']} ❌ Attempt {attempt}: Error - {str(e)[:50]}")
             if attempt < max_retries:
                 wait_time = 2 ** attempt
-                logger.info(f"{EMOJI['hourglass']} â³ Waiting {wait_time} seconds before retry...")
+                logger.info(f"{EMOJI['hourglass']} ⏳ Waiting {wait_time} seconds before retry...")
                 time.sleep(wait_time)
-        logger.error(f"{EMOJI['error']} âŒ Failed to fetch DataDome cookie after {max_retries} attempts")
+        logger.error(f"{EMOJI['error']} ❌ Failed to fetch DataDome cookie after {max_retries} attempts")
         return False
     def handle_403(self, session):
         """Now automatically rotates proxy via API and fetches new DataDome."""
         self._403_attempts += 1
-        logger.info(f"{EMOJI['refresh']} ðŸ”„ 403 encountered â€“ rotating residential proxy via API...")
+        logger.info(f"{EMOJI['refresh']} 🔄 403 encountered – rotating residential proxy via API...")
         new_proxies = refresh_proxy()
         if update_session_proxies(session, new_proxies):
-            logger.info("âœ… Proxy switched. Fetching fresh DataDome cookie...")
+            logger.info("✅ Proxy switched. Fetching fresh DataDome cookie...")
             if self.fetch_fresh_datadome_with_retry(session):
                 self._403_attempts = 0
                 self._blocked = False
@@ -294,34 +294,34 @@ class DataDomeManager:
             return True
         return False
     def wait_for_ip_change(self, session, check_interval=5, max_wait_time=300):
-        logger.info(f"{EMOJI['refresh']} ðŸ”„ Auto-detecting IP change...")
+        logger.info(f"{EMOJI['refresh']} 🔄 Auto-detecting IP change...")
         original_ip = self.get_current_ip()
         if not original_ip:
             logger.warning(f"{EMOJI['warning']} Could not determine current IP")
             time.sleep(10)
             return self.fetch_fresh_datadome_with_retry(session)
-        logger.info(f"{EMOJI['ip']} ðŸ“ Current IP: {original_ip}")
-        logger.info(f"{EMOJI['hourglass']} â³ Waiting for IP change (checking every {check_interval}s, max {max_wait_time//60} minutes)...")
+        logger.info(f"{EMOJI['ip']} 📍 Current IP: {original_ip}")
+        logger.info(f"{EMOJI['hourglass']} ⏳ Waiting for IP change (checking every {check_interval}s, max {max_wait_time//60} minutes)...")
         start_time = time.time()
         while time.time() - start_time < max_wait_time:
             current_ip = self.get_current_ip()
             if current_ip and current_ip != original_ip:
-                logger.info(f"{EMOJI['success']} âœ… IP changed from {original_ip} to {current_ip}")
+                logger.info(f"{EMOJI['success']} ✅ IP changed from {original_ip} to {current_ip}")
                 if self.fetch_fresh_datadome_with_retry(session):
                     return True
                 return False
             time.sleep(check_interval)
-        logger.warning(f"{EMOJI['warning']} âš ï¸  IP did not change after {max_wait_time} seconds")
+        logger.warning(f"{EMOJI['warning']} ⚠️  IP did not change after {max_wait_time} seconds")
         return self.fetch_fresh_datadome_with_retry(session)
     def is_blocked(self): return self._blocked
     def reset_attempts(self): self._403_attempts = 0; self._blocked = False
 
 def get_country_emoji(country_code):
-    emojis = {'PH':'ðŸ‡µðŸ‡­','ID':'ðŸ‡®ðŸ‡©','TH':'ðŸ‡¹ðŸ‡­','VN':'ðŸ‡»ðŸ‡³','MY':'ðŸ‡²ðŸ‡¾','SG':'ðŸ‡¸ðŸ‡¬','TW':'ðŸ‡¹ðŸ‡¼','BR':'ðŸ‡§ðŸ‡·','IN':'ðŸ‡®ðŸ‡³','US':'ðŸ‡ºðŸ‡¸','GB':'ðŸ‡¬ðŸ‡§','CN':'ðŸ‡¨ðŸ‡³','JP':'ðŸ‡¯ðŸ‡µ','KR':'ðŸ‡°ðŸ‡·','AU':'ðŸ‡¦ðŸ‡º','CA':'ðŸ‡¨ðŸ‡¦','DE':'ðŸ‡©ðŸ‡ª','FR':'ðŸ‡«ðŸ‡·','IT':'ðŸ‡®ðŸ‡¹','ES':'ðŸ‡ªðŸ‡¸','MX':'ðŸ‡²ðŸ‡½','RU':'ðŸ‡·ðŸ‡º','SA':'ðŸ‡¸ðŸ‡¦','AE':'ðŸ‡¦ðŸ‡ª','NL':'ðŸ‡³ðŸ‡±','SE':'ðŸ‡¸ðŸ‡ª','NO':'ðŸ‡³ðŸ‡´','DK':'ðŸ‡©ðŸ‡°','FI':'ðŸ‡«ðŸ‡®','PL':'ðŸ‡µðŸ‡±','TR':'ðŸ‡¹ðŸ‡·','EG':'ðŸ‡ªðŸ‡¬','ZA':'ðŸ‡¿ðŸ‡¦','NG':'ðŸ‡³ðŸ‡¬','KE':'ðŸ‡°ðŸ‡ª','AR':'ðŸ‡¦ðŸ‡·','CL':'ðŸ‡¨ðŸ‡±','CO':'ðŸ‡¨ðŸ‡´','PE':'ðŸ‡µðŸ‡ª','VE':'ðŸ‡»ðŸ‡ª','NZ':'ðŸ‡³ðŸ‡¿','PT':'ðŸ‡µðŸ‡¹','GR':'ðŸ‡¬ðŸ‡·','CZ':'ðŸ‡¨ðŸ‡¿','HU':'ðŸ‡­ðŸ‡º','RO':'ðŸ‡·ðŸ‡´','AT':'ðŸ‡¦ðŸ‡¹','CH':'ðŸ‡¨ðŸ‡­','BE':'ðŸ‡§ðŸ‡ª','IE':'ðŸ‡®ðŸ‡ª','UA':'ðŸ‡ºðŸ‡¦','IL':'ðŸ‡®ðŸ‡±','PK':'ðŸ‡µðŸ‡°','BD':'ðŸ‡§ðŸ‡©','LK':'ðŸ‡±ðŸ‡°','MM':'ðŸ‡²ðŸ‡²','KH':'ðŸ‡°ðŸ‡­','LA':'ðŸ‡±ðŸ‡¦','HK':'ðŸ‡­ðŸ‡°','MO':'ðŸ‡²ðŸ‡´'}
-    return emojis.get(country_code.upper(), 'ðŸŒ')
+    emojis = {'PH':'🇵🇭','ID':'🇮🇩','TH':'🇹🇭','VN':'🇻🇳','MY':'🇲🇾','SG':'🇸🇬','TW':'🇹🇼','BR':'🇧🇷','IN':'🇮🇳','US':'🇺🇸','GB':'🇬🇧','CN':'🇨🇳','JP':'🇯🇵','KR':'🇰🇷','AU':'🇦🇺','CA':'🇨🇦','DE':'🇩🇪','FR':'🇫🇷','IT':'🇮🇹','ES':'🇪🇸','MX':'🇲🇽','RU':'🇷🇺','SA':'🇸🇦','AE':'🇦🇪','NL':'🇳🇱','SE':'🇸🇪','NO':'🇳🇴','DK':'🇩🇰','FI':'🇫🇮','PL':'🇵🇱','TR':'🇹🇷','EG':'🇪🇬','ZA':'🇿🇦','NG':'🇳🇬','KE':'🇰🇪','AR':'🇦🇷','CL':'🇨🇱','CO':'🇨🇴','PE':'🇵🇪','VE':'🇻🇪','NZ':'🇳🇿','PT':'🇵🇹','GR':'🇬🇷','CZ':'🇨🇿','HU':'🇭🇺','RO':'🇷🇴','AT':'🇦🇹','CH':'🇨🇭','BE':'🇧🇪','IE':'🇮🇪','UA':'🇺🇦','IL':'🇮🇱','PK':'🇵🇰','BD':'🇧🇩','LK':'🇱🇰','MM':'🇲🇲','KH':'🇰🇭','LA':'🇱🇦','HK':'🇭🇰','MO':'🇲🇴'}
+    return emojis.get(country_code.upper(), '🌍')
 
 # ================================
-# ðŸ“Š LiveStats â€“ now generates a Rich panel
+# 📊 LiveStats – now generates a Rich panel
 # ================================
 class LiveStats:
     def __init__(self):
@@ -476,7 +476,7 @@ class LiveStats:
         console.print("\n")
 
 # ================================
-# ðŸ” Crypto & Login Functions (unchanged)
+# 🔐 Crypto & Login Functions (unchanged)
 # ================================
 def encode(plaintext, key):
     key = bytes.fromhex(key)
@@ -602,7 +602,7 @@ def prelogin(session, account, datadome_manager):
                     if name=='datadome': datadome_manager.set_datadome(value)
             new_datadome = new_cookies.get('datadome')
             if response.status_code == 403:
-                logger.error(f"{EMOJI['error']} ðŸš« Access denied (403)")
+                logger.error(f"{EMOJI['error']} 🚫 Access denied (403)")
                 if new_cookies and attempt<retries-1:
                     logger.info(f"{EMOJI['refresh']} Retrying with new cookies...")
                     time.sleep(2)
@@ -610,7 +610,7 @@ def prelogin(session, account, datadome_manager):
                 if datadome_manager.handle_403(session):
                     return "IP_BLOCKED", None, None
                 else:
-                    logger.error(f"{EMOJI['error']} ðŸš¨ IP blocked - cannot continue")
+                    logger.error(f"{EMOJI['error']} 🚨 IP blocked - cannot continue")
                     return None, None, new_datadome
             response.raise_for_status()
             data = response.json()
@@ -621,11 +621,11 @@ def prelogin(session, account, datadome_manager):
             if not v1 or not v2:
                 logger.error(f"{EMOJI['error']} Missing authentication data")
                 return None, None, new_datadome
-            logger.info(f"{EMOJI['success']} âœ” Prelogin successful")
+            logger.info(f"{EMOJI['success']} ✔ Prelogin successful")
             return v1, v2, new_datadome
         except requests.exceptions.HTTPError as e:
             if hasattr(e,'response') and e.response and e.response.status_code==403:
-                logger.error(f"{EMOJI['error']} ðŸš« Access denied (403)")
+                logger.error(f"{EMOJI['error']} 🚫 Access denied (403)")
                 new_cookies = {}
                 if 'set-cookie' in e.response.headers:
                     for cookie_str in e.response.headers['set-cookie'].split(','):
@@ -645,7 +645,7 @@ def prelogin(session, account, datadome_manager):
                 if datadome_manager.handle_403(session):
                     return "IP_BLOCKED", None, None
                 else:
-                    logger.error(f"{EMOJI['error']} ðŸš¨ IP blocked - cannot continue")
+                    logger.error(f"{EMOJI['error']} 🚨 IP blocked - cannot continue")
                     return None, None, new_cookies.get('datadome')
             else:
                 logger.error(f"{EMOJI['error']} HTTP error")
@@ -843,21 +843,21 @@ def display_codm_info(account_details, codm_info, leak_info=None):
         }
 
     is_clean = account_details.get('is_clean', False)
-    clean_badge = f"{Fore.GREEN}âœ“ CLEAN{Style.RESET_ALL}" if is_clean else f"{Fore.RED}âœ— NOT CLEAN{Style.RESET_ALL}"
+    clean_badge = f"{Fore.GREEN}✓ CLEAN{Style.RESET_ALL}" if is_clean else f"{Fore.RED}✗ NOT CLEAN{Style.RESET_ALL}"
     
     lines = []
-    arrow = "â†’ "
+    arrow = "→ "
     
-    lines.append(f"{arrow}{Fore.CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•{Style.RESET_ALL}")
-    lines.append(f"{arrow}{Fore.WHITE}ðŸ” ACCOUNT CHECK SUCCESS  {clean_badge}{Style.RESET_ALL}")
-    lines.append(f"{arrow}{Fore.CYAN}â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.CYAN}════════════════════════════════════════════════════════════════{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.WHITE}🔐 ACCOUNT CHECK SUCCESS  {clean_badge}{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.CYAN}────────────────────────────────────────────────────────────────{Style.RESET_ALL}")
     
     username = account_details.get('username', 'N/A')
     shell = account_details.get('profile', {}).get('shell_balance', 0)
     shell_color = Fore.GREEN if shell > 0 else Fore.RED
     email = account_details.get('email', 'N/A')
     email_verified = account_details.get('email_verified', False)
-    email_status = f"{Fore.GREEN}âœ“ Verified{Style.RESET_ALL}" if email_verified else f"{Fore.RED}âœ— Not Verified{Style.RESET_ALL}"
+    email_status = f"{Fore.GREEN}✓ Verified{Style.RESET_ALL}" if email_verified else f"{Fore.RED}✗ Not Verified{Style.RESET_ALL}"
     mobile_raw = account_details.get('personal', {}).get('mobile_no', 'N/A')
     mobile_display = f"+{mobile_raw}" if mobile_raw not in ['Not Set', 'N/A', ''] and not str(mobile_raw).startswith('+') else mobile_raw
     if mobile_raw in ['Not Set', 'N/A', '']:
@@ -865,16 +865,16 @@ def display_codm_info(account_details, codm_info, leak_info=None):
     fb_data = account_details.get('security', {}).get('facebook_account', None)
     if isinstance(fb_data, dict):
         fb_username = fb_data.get('fb_username', 'N/A')
-        fb_status = f"{Fore.GREEN}âœ“ CONNECTED{Style.RESET_ALL}" if fb_username else f"{Fore.YELLOW}âš ï¸ DELETED{Style.RESET_ALL}"
+        fb_status = f"{Fore.GREEN}✓ CONNECTED{Style.RESET_ALL}" if fb_username else f"{Fore.YELLOW}⚠️ DELETED{Style.RESET_ALL}"
     else:
         fb_username = "N/A"
-        fb_status = f"{Fore.RED}âœ— NOT CONNECTED{Style.RESET_ALL}"
+        fb_status = f"{Fore.RED}✗ NOT CONNECTED{Style.RESET_ALL}"
     
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ”‘ LOGIN:{Style.RESET_ALL} {Fore.WHITE}{username}{Style.RESET_ALL}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ’° SHELL:{Style.RESET_ALL} {shell_color}{shell}{Style.RESET_ALL}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ“§ EMAIL:{Style.RESET_ALL} {email} ({email_status})")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ“± MOBILE:{Style.RESET_ALL} {mobile_display}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ“˜ FB USER:{Style.RESET_ALL} {fb_username}")
+    lines.append(f"{arrow}{Fore.YELLOW}🔑 LOGIN:{Style.RESET_ALL} {Fore.WHITE}{username}{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.YELLOW}💰 SHELL:{Style.RESET_ALL} {shell_color}{shell}{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.YELLOW}📧 EMAIL:{Style.RESET_ALL} {email} ({email_status})")
+    lines.append(f"{arrow}{Fore.YELLOW}📱 MOBILE:{Style.RESET_ALL} {mobile_display}")
+    lines.append(f"{arrow}{Fore.YELLOW}📘 FB USER:{Style.RESET_ALL} {fb_username}")
     lines.append(f"{arrow}{Fore.YELLOW}FB STATUS:{Style.RESET_ALL} {fb_status}")
     
     last_login = account_details.get('last_login', 'Unknown')
@@ -883,17 +883,17 @@ def display_codm_info(account_details, codm_info, leak_info=None):
     two_step = account_details.get('security', {}).get('two_step_verify', False)
     auth_app = account_details.get('security', {}).get('authenticator_app', False)
     security_parts = []
-    security_parts.append(f"{Fore.GREEN}âœ“ 2FA{Style.RESET_ALL}" if two_step else f"{Fore.RED}âœ— 2FA{Style.RESET_ALL}")
-    security_parts.append(f"{Fore.GREEN}âœ“ Auth{Style.RESET_ALL}" if auth_app else f"{Fore.RED}âœ— Auth{Style.RESET_ALL}")
+    security_parts.append(f"{Fore.GREEN}✓ 2FA{Style.RESET_ALL}" if two_step else f"{Fore.RED}✗ 2FA{Style.RESET_ALL}")
+    security_parts.append(f"{Fore.GREEN}✓ Auth{Style.RESET_ALL}" if auth_app else f"{Fore.RED}✗ Auth{Style.RESET_ALL}")
     bind_status = account_details.get('bind_status', 'N/A')
     
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ•’ LAST LOGIN:{Style.RESET_ALL} {last_login}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸŒ LOCATION:{Style.RESET_ALL} {last_login_where}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸŒ IP:{Style.RESET_ALL} {login_ip}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ›¡ï¸ SECURITY:{Style.RESET_ALL} {' | '.join(security_parts)}")
-    lines.append(f"{arrow}{Fore.YELLOW}ðŸ“Œ BINDS:{Style.RESET_ALL} {bind_status}")
+    lines.append(f"{arrow}{Fore.YELLOW}🕒 LAST LOGIN:{Style.RESET_ALL} {last_login}")
+    lines.append(f"{arrow}{Fore.YELLOW}🌍 LOCATION:{Style.RESET_ALL} {last_login_where}")
+    lines.append(f"{arrow}{Fore.YELLOW}🌐 IP:{Style.RESET_ALL} {login_ip}")
+    lines.append(f"{arrow}{Fore.YELLOW}🛡️ SECURITY:{Style.RESET_ALL} {' | '.join(security_parts)}")
+    lines.append(f"{arrow}{Fore.YELLOW}📌 BINDS:{Style.RESET_ALL} {bind_status}")
     
-    lines.append(f"{arrow}{Fore.CYAN}â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.CYAN}────────────────────────────────────────────────────────────────{Style.RESET_ALL}")
     
     if codm_info and codm_info.get('codm_level', 'N/A') != 'N/A':
         codm_level = str(codm_info.get('codm_level', 'N/A'))
@@ -901,25 +901,25 @@ def display_codm_info(account_details, codm_info, leak_info=None):
         codm_region = str(codm_info.get('region', 'N/A'))
         codm_uid = str(codm_info.get('uid', 'N/A'))
         is_banned = bool(codm_info.get('banned', False))
-        banned_status = f"{Fore.RED}ðŸ”´ BANNED{Style.RESET_ALL}" if is_banned else f"{Fore.GREEN}ðŸŸ¢ ACTIVE{Style.RESET_ALL}"
+        banned_status = f"{Fore.RED}🔴 BANNED{Style.RESET_ALL}" if is_banned else f"{Fore.GREEN}🟢 ACTIVE{Style.RESET_ALL}"
         region_flag = get_country_emoji(codm_region)
         
-        lines.append(f"{arrow}{Fore.MAGENTA}âš¡ CALL OF DUTY MOBILE âš¡{Style.RESET_ALL}")
-        lines.append(f"{arrow}{Fore.YELLOW}ðŸŽ¯ LEVEL:{Style.RESET_ALL} {Fore.CYAN}{codm_level}{Style.RESET_ALL}")
-        lines.append(f"{arrow}{Fore.YELLOW}ðŸŽ® IGN:{Style.RESET_ALL} {Fore.GREEN}{codm_nick}{Style.RESET_ALL}")
-        lines.append(f"{arrow}{Fore.YELLOW}ðŸŒ SERVER:{Style.RESET_ALL} {region_flag} {codm_region}")
-        lines.append(f"{arrow}{Fore.YELLOW}ðŸ†” UID:{Style.RESET_ALL} {codm_uid}")
-        lines.append(f"{arrow}{Fore.YELLOW}ðŸš« BANNED?:{Style.RESET_ALL} {banned_status}")
-        lines.append(f"{arrow}{Fore.CYAN}â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.MAGENTA}⚡ CALL OF DUTY MOBILE ⚡{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.YELLOW}🎯 LEVEL:{Style.RESET_ALL} {Fore.CYAN}{codm_level}{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.YELLOW}🎮 IGN:{Style.RESET_ALL} {Fore.GREEN}{codm_nick}{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.YELLOW}🌍 SERVER:{Style.RESET_ALL} {region_flag} {codm_region}")
+        lines.append(f"{arrow}{Fore.YELLOW}🆔 UID:{Style.RESET_ALL} {codm_uid}")
+        lines.append(f"{arrow}{Fore.YELLOW}🚫 BANNED?:{Style.RESET_ALL} {banned_status}")
+        lines.append(f"{arrow}{Fore.CYAN}────────────────────────────────────────────────────────────────{Style.RESET_ALL}")
     
     game_list = account_details.get('game_info', [])
     if game_list:
-        lines.append(f"{arrow}{Fore.MAGENTA}ðŸŽ® OTHER CONNECTED GAMES{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.MAGENTA}🎮 OTHER CONNECTED GAMES{Style.RESET_ALL}")
         for g in game_list:
-            lines.append(f"{arrow}  â€¢ {g.get('game', 'Unknown')} â†’ {Fore.CYAN}{g.get('role', 'N/A')}{Style.RESET_ALL}")
-        lines.append(f"{arrow}{Fore.CYAN}â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€{Style.RESET_ALL}")
+            lines.append(f"{arrow}  • {g.get('game', 'Unknown')} → {Fore.CYAN}{g.get('role', 'N/A')}{Style.RESET_ALL}")
+        lines.append(f"{arrow}{Fore.CYAN}────────────────────────────────────────────────────────────────{Style.RESET_ALL}")
     
-    lines.append(f"{arrow}{Fore.CYAN}â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•{Style.RESET_ALL}")
+    lines.append(f"{arrow}{Fore.CYAN}════════════════════════════════════════════════════════════════{Style.RESET_ALL}")
     
     for line in lines:
         console.print(line)
@@ -927,7 +927,7 @@ def display_codm_info(account_details, codm_info, leak_info=None):
     return ""
 
 # ================================
-# ðŸ—‚ï¸ Save Functions (unchanged)
+# 🗂️ Save Functions (unchanged)
 # ================================
 def save_game_folder(account, password, details, codm_info, game_connections, result_folder='Results'):
     try:
@@ -1417,25 +1417,25 @@ def select_input_file():
     combo_folder = os.path.join(script_dir, "Combo")
     
     console.print()
-    header = Panel(Align.center(Text("ðŸ“ FILE SELECTOR", style="bold cyan")), border_style="cyan", box=ROUNDED, width=60)
+    header = Panel(Align.center(Text("📁 FILE SELECTOR", style="bold cyan")), border_style="cyan", box=ROUNDED, width=60)
     console.print(header)
     console.print()
     
-    show_instructions = Confirm.ask("ðŸ“– [bold cyan]Show instructions?[/bold cyan]", default=False)
+    show_instructions = Confirm.ask("📖 [bold cyan]Show instructions?[/bold cyan]", default=False)
     if show_instructions:
         console.print(Panel(
-            "[bold yellow]âš¡ QUICK GUIDE[/bold yellow]\n\n"
-            "ðŸª Auto-generated cookies from fresh_cookies.txt\n"
-            "ðŸ”„ Use RESERVE_FRESH_COOKIE.TXT as backup\n"
-            "ðŸ”‘ Rename reserve file to fresh_cookies.txt when needed\n"
-            "ðŸŒ IP blocked? Change IP + cookies immediately\n"
-            "ðŸš« Blocked 2-3 times? Delete fresh_cookies.txt and use reserve",
-            border_style="yellow", box=ROUNDED, title="ðŸ“– Instructions"))
+            "[bold yellow]⚡ QUICK GUIDE[/bold yellow]\n\n"
+            "🍪 Auto-generated cookies from fresh_cookies.txt\n"
+            "🔄 Use RESERVE_FRESH_COOKIE.TXT as backup\n"
+            "🔑 Rename reserve file to fresh_cookies.txt when needed\n"
+            "🌍 IP blocked? Change IP + cookies immediately\n"
+            "🚫 Blocked 2-3 times? Delete fresh_cookies.txt and use reserve",
+            border_style="yellow", box=ROUNDED, title="📖 Instructions"))
         console.print()
     
     if not os.path.exists(combo_folder):
         os.makedirs(combo_folder, exist_ok=True)
-        console.print(Panel("[bold green]âœ… Combo folder created![/bold green]\n\nâš ï¸  Add your .txt files to the Combo folder and restart", border_style="green", title="Setup Complete"))
+        console.print(Panel("[bold green]✅ Combo folder created![/bold green]\n\n⚠️  Add your .txt files to the Combo folder and restart", border_style="green", title="Setup Complete"))
         exit(0)
     
     with Progress(SpinnerColumn(), TextColumn("[bold cyan]Scanning files...[/bold cyan]"), transient=True) as progress:
@@ -1463,9 +1463,9 @@ def select_input_file():
         console.print(table)
         console.print()
         while True:
-            choice = Prompt.ask("ðŸŽ¯ [bold cyan]Select file number (or Enter for auto-detect)[/bold cyan]", default="")
+            choice = Prompt.ask("🎯 [bold cyan]Select file number (or Enter for auto-detect)[/bold cyan]", default="")
             if not choice:
-                with Progress(SpinnerColumn(), TextColumn("[bold yellow]ðŸ” Auto-detecting...[/bold yellow]"), transient=True) as progress:
+                with Progress(SpinnerColumn(), TextColumn("[bold yellow]🔍 Auto-detecting...[/bold yellow]"), transient=True) as progress:
                     progress.add_task("search", total=None)
                     time.sleep(0.8)
                 file_path = find_nearest_account_file()
@@ -1474,17 +1474,17 @@ def select_input_file():
                 idx = int(choice) - 1
                 if 0 <= idx < len(txt_files):
                     file_path = os.path.join(combo_folder, txt_files[idx])
-                    console.print(Panel(f"âœ… [bold green]Selected:[/bold green] [cyan]{txt_files[idx]}[/cyan]", border_style="green", box=ROUNDED))
+                    console.print(Panel(f"✅ [bold green]Selected:[/bold green] [cyan]{txt_files[idx]}[/cyan]", border_style="green", box=ROUNDED))
                     break
                 else:
-                    console.print("âŒ [red]Invalid choice. Pick 1-{}.[/red]".format(len(txt_files)))
+                    console.print("❌ [red]Invalid choice. Pick 1-{}.[/red]".format(len(txt_files)))
             except ValueError:
-                console.print("âŒ [red]Enter a valid number.[/red]")
+                console.print("❌ [red]Enter a valid number.[/red]")
     else:
-        console.print(Panel("âš ï¸ [yellow]No .txt files found in Combo folder[/yellow]\n\nAdd files to: [cyan]Combo/[/cyan]", border_style="yellow", title="No Files"))
-        file_path = Prompt.ask("ðŸ“ [cyan]Enter file path (or Enter to auto-search)[/cyan]").strip()
+        console.print(Panel("⚠️ [yellow]No .txt files found in Combo folder[/yellow]\n\nAdd files to: [cyan]Combo/[/cyan]", border_style="yellow", title="No Files"))
+        file_path = Prompt.ask("📁 [cyan]Enter file path (or Enter to auto-search)[/cyan]").strip()
         if not file_path:
-            with Progress(SpinnerColumn(), TextColumn("[bold yellow]ðŸ” Auto-searching...[/bold yellow]"), transient=True) as progress:
+            with Progress(SpinnerColumn(), TextColumn("[bold yellow]🔍 Auto-searching...[/bold yellow]"), transient=True) as progress:
                 progress.add_task("search", total=None)
                 time.sleep(0.8)
             file_path = find_nearest_account_file()
@@ -1494,7 +1494,7 @@ def select_input_file():
 def main():
     global account_counter, counter_lock, live_display
     def sig_handler(sig, frame):
-        console.print(f"\n\n{EMOJI['stop']} [yellow]âš ï¸  Script terminated by user (Ctrl+C)[/yellow]\n{EMOJI['play']} [cyan]Stopping immediately...[/cyan]\n")
+        console.print(f"\n\n{EMOJI['stop']} [yellow]⚠️  Script terminated by user (Ctrl+C)[/yellow]\n{EMOJI['play']} [cyan]Stopping immediately...[/cyan]\n")
         shutdown_event.set()
         if live_stats_global: live_stats_global.display_final_summary()
         os._exit(0)
@@ -1504,27 +1504,27 @@ def main():
     
     cleanup_result_files()
     filename = select_input_file()
-    if not os.path.exists(filename): console.print(f"{EMOJI['error']} âœ˜ File not found: {filename}"); return
+    if not os.path.exists(filename): console.print(f"{EMOJI['error']} ✘ File not found: {filename}"); return
     result_folder = "results"
-    console.print(f"{EMOJI['folder']} [cyan]ðŸ“ Results folder: {result_folder}/[/cyan]")
+    console.print(f"{EMOJI['folder']} [cyan]📁 Results folder: {result_folder}/[/cyan]")
     os.makedirs(result_folder, exist_ok=True)
     console.print()
-    auto_remove = console.input(f"{EMOJI['database']} [cyan]ðŸ—‘ï¸  Auto-remove checked lines? (y/N): [/cyan]").strip().lower() == "y"
+    auto_remove = console.input(f"{EMOJI['database']} [cyan]🗑️  Auto-remove checked lines? (y/N): [/cyan]").strip().lower() == "y"
     console.print()
     while True:
         try:
-            thread_input = console.input(f"{EMOJI['gear']} [cyan]ðŸ§µ Number of threads (1-50, default 1): [/cyan]").strip()
+            thread_input = console.input(f"{EMOJI['gear']} [cyan]🧵 Number of threads (1-50, default 1): [/cyan]").strip()
             max_workers = int(thread_input) if thread_input else 1
             if 1 <= max_workers <= 50: break
-            else: console.print(f"{EMOJI['error']} [red]âœ˜ Please enter a number between 1 and 50[/red]")
-        except ValueError: console.print(f"{EMOJI['error']} [red]âœ˜ Please enter a valid number[/red]")
-        except KeyboardInterrupt: console.print(f"\n{EMOJI['stop']} [yellow]âš ï¸  Cancelled by user[/yellow]"); return
-    console.print(f"{EMOJI['success']} [green]âœ” Using {max_workers} thread(s)[/green]")
+            else: console.print(f"{EMOJI['error']} [red]✘ Please enter a number between 1 and 50[/red]")
+        except ValueError: console.print(f"{EMOJI['error']} [red]✘ Please enter a valid number[/red]")
+        except KeyboardInterrupt: console.print(f"\n{EMOJI['stop']} [yellow]⚠️  Cancelled by user[/yellow]"); return
+    console.print(f"{EMOJI['success']} [green]✔ Using {max_workers} thread(s)[/green]")
     console.print()
     global CHECK_OTHER_GAMES
     other_games = console.input(f"{EMOJI['game']} [cyan]Check other games (AOV / ROV / Delta Force / etc)? (y/N): [/cyan]").strip().lower()
     CHECK_OTHER_GAMES = other_games == "y"
-    console.print(f"{EMOJI['check']} [green]âœ” Will check all game connections[/green]" if CHECK_OTHER_GAMES else f"{EMOJI['info']} [yellow]  CODM only â€” skipping other game checks[/yellow]")
+    console.print(f"{EMOJI['check']} [green]✔ Will check all game connections[/green]" if CHECK_OTHER_GAMES else f"{EMOJI['info']} [yellow]  CODM only — skipping other game checks[/yellow]")
     console.print()
     cookie_manager = CookieManager()
     datadome_manager = DataDomeManager()
@@ -1536,32 +1536,32 @@ def main():
     valid_cookies = cookie_manager.get_valid_cookies()
     if valid_cookies:
         combined = "; ".join(valid_cookies)
-        console.print(f"{EMOJI['cookie']} [green]âœ” Loaded {len(valid_cookies)} saved cookies[/green]")
+        console.print(f"{EMOJI['cookie']} [green]✔ Loaded {len(valid_cookies)} saved cookies[/green]")
         applyck(session, combined)
         last_cookie = valid_cookies[-1]
         datadome_val = last_cookie.split('=',1)[1].strip() if '=' in last_cookie and len(last_cookie.split('=',1))>1 else None
         if datadome_val: datadome_manager.set_datadome(datadome_val)
     else:
-        console.print(f"{EMOJI['warning']} [yellow]âš ï¸  No saved cookies. Generating fresh session...[/yellow]")
+        console.print(f"{EMOJI['warning']} [yellow]⚠️  No saved cookies. Generating fresh session...[/yellow]")
         dd = get_datadome_cookie(session)
-        if dd: datadome_manager.set_datadome(dd); console.print(f"{EMOJI['success']} [green]âœ” Generated DataDome cookie[/green]")
+        if dd: datadome_manager.set_datadome(dd); console.print(f"{EMOJI['success']} [green]✔ Generated DataDome cookie[/green]")
     accounts = []
     for enc in ['utf-8','latin-1','cp1252','iso-8859-1']:
         try:
             with open(filename, 'r', encoding=enc) as f:
                 accounts = [line.strip() for line in f if line.strip() and not line.startswith('===')]
-            console.print(f"{EMOJI['success']} [green]âœ” File loaded ({enc})[/green]")
+            console.print(f"{EMOJI['success']} [green]✔ File loaded ({enc})[/green]")
             break
         except: continue
     if not accounts:
         try:
             with open(filename, 'r', encoding='utf-8', errors='ignore') as f:
                 accounts = [line.strip() for line in f if line.strip() and not line.startswith('===')]
-            console.print(f"{EMOJI['success']} [green]âœ” File loaded with fallback encoding[/green]")
-        except Exception as e: console.print(f"{EMOJI['error']} âœ˜ Could not read file: {e}"); return
-    if not accounts: console.print(f"{EMOJI['error']} âœ˜ No valid accounts found"); return
-    console.print(f"{EMOJI['chart']} [cyan]ðŸ“Š Processing {len(accounts)} accounts with {max_workers} thread(s)...[/cyan]\n")
-    console.print(f"{EMOJI['line']} [cyan]{'â”€'*75}[/cyan]\n")
+            console.print(f"{EMOJI['success']} [green]✔ File loaded with fallback encoding[/green]")
+        except Exception as e: console.print(f"{EMOJI['error']} ✘ Could not read file: {e}"); return
+    if not accounts: console.print(f"{EMOJI['error']} ✘ No valid accounts found"); return
+    console.print(f"{EMOJI['chart']} [cyan]📊 Processing {len(accounts)} accounts with {max_workers} thread(s)...[/cyan]\n")
+    console.print(f"{EMOJI['line']} [cyan]{'─'*75}[/cyan]\n")
     account_counter = {"count":0,"total":len(accounts)}
     counter_lock = Lock()
     account_index = 0
@@ -1585,7 +1585,7 @@ def main():
             if retry_queue:
                 current_batch = retry_queue[:max_workers*10]
                 retry_queue = retry_queue[max_workers*10:]
-                logger.info(f"{EMOJI['refresh']} ðŸ”„ Processing {len(current_batch)} retry accounts...")
+                logger.info(f"{EMOJI['refresh']} 🔄 Processing {len(current_batch)} retry accounts...")
             else:
                 batch_size = min(max_workers*10, len(accounts)-account_index)
                 if batch_size <= 0: break
@@ -1619,7 +1619,7 @@ def main():
                 if batch_limited: continue
                 if account_index < len(accounts) or retry_queue: time.sleep(0.5)
     if shutdown_event.is_set():
-        console.print(f"\n{EMOJI['stop']} [yellow]âš ï¸  Processing interrupted by user[/yellow]")
+        console.print(f"\n{EMOJI['stop']} [yellow]⚠️  Processing interrupted by user[/yellow]")
         if live_stats_global: live_stats_global.display_final_summary()
         return
     live_stats.display_final_summary()
@@ -1637,11 +1637,11 @@ def process_account_wrapper(account_line, session, cookie_manager, datadome_mana
         console.print(f"{EMOJI['gear']} [bold cyan][{idx}/{account_counter['total']}] Processing: {account}[/bold cyan]")
         result = processaccount(session, account, password, cookie_manager, datadome_manager, live_stats, result_folder)
         if result == "RATE_LIMITED":
-            logger.warning(f"{EMOJI['warning']} â¸ï¸  Account {account} hit rate limit - will retry after IP change")
+            logger.warning(f"{EMOJI['warning']} ⏸️  Account {account} hit rate limit - will retry after IP change")
             with counter_lock: account_counter["count"] -= 1
             return "RATE_LIMITED"
         if result: print(result)
-        print(f"\n  {Fore.LIGHTCYAN_EX}â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”{Style.RESET_ALL}\n")
+        print(f"\n  {Fore.LIGHTCYAN_EX}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Style.RESET_ALL}\n")
         if AUTO_REMOVE_CHECKED:
             with file_lock:
                 try:
@@ -1652,7 +1652,7 @@ def process_account_wrapper(account_line, session, cookie_manager, datadome_mana
                 except: pass
         return "SUCCESS"
     except Exception as e:
-        console.print(f"{EMOJI['error']} âœ˜ Failed to process {account}: {e}")
+        console.print(f"{EMOJI['error']} ✘ Failed to process {account}: {e}")
         return None
 
 def cleanup_result_files():
@@ -1687,10 +1687,10 @@ if __name__ == "__main__":
     live_stats_global = None
     try: main()
     except KeyboardInterrupt:
-        console.print(f"\n{EMOJI['stop']} [yellow]âš ï¸  Script terminated by user[/yellow]")
+        console.print(f"\n{EMOJI['stop']} [yellow]⚠️  Script terminated by user[/yellow]")
         if live_stats_global: live_stats_global.display_final_summary()
         sys.exit(0)
     except Exception as e:
-        console.print(f"{EMOJI['error']} âœ˜ Unexpected error: {e}")
+        console.print(f"{EMOJI['error']} ✘ Unexpected error: {e}")
         if live_stats_global: live_stats_global.display_final_summary()
         sys.exit(1)
